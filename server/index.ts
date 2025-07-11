@@ -1,5 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
+import path from "path";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
@@ -12,13 +13,16 @@ declare module "express-session" {
 
 const app = express();
 
+// Trust proxy for production environments
+app.set('trust proxy', 1);
+
 // Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || "your-secret-key-here",
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === "production",
+    secure: false, // Set to true only with HTTPS
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 // 24 hours
   }
